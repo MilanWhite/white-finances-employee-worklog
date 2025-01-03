@@ -1,0 +1,20 @@
+#3786b5 , slate blue
+#63a7cf , slate blue hover
+
+#394955 , slate dark (use for sidebar and such)
+
+#9dadbc , slate light (use for secondary butons and such)
+#8095a8 , slate light hover
+
+OPTIONAL: 
+
+tapestry: #AD6A8F ( badges )
+Cosmic: #77395C ( error messages )
+
+TEXT: 
+
+light: #6b7280, text-gray-500
+
+main: #374151, text gray 700
+
+dark: #111827, text gray 900
