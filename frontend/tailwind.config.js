@@ -4,6 +4,7 @@ export default {
         "./src/*.{js,ts,jsx,tsx}",
         "./pages/*.{js,ts,jsx,tsx}",
         "./components/**/*.{js,ts,jsx,tsx}",
+        "./*"
       ],
       theme: {
         extend: {
@@ -19,14 +20,15 @@ export default {
               tapestry: '#AD6A8F',
               cosmic: '#77395C',
             },
-            text: {
-              light: '#6b7280', // text-gray-500
-              main: '#374151', // text-gray-700
-              dark: '#111827', // text-gray-900
-            },
+            //TEXT
+            light: '#6b7280', // text-gray-500
+            main: '#374151', // text-gray-700
+            dark: '#111827', // text-gray-900
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
           },
         },
       },
     plugins: [],
 }
-
