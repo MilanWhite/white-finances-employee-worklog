@@ -1,11 +1,12 @@
 import React from "react";
-import { LogoText } from "../components/Logo/Logo";
-
-import useEmployeeLogin, { LoginInfo } from "../hooks/useEmployeeLogin";
 
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+
+import useManagerLogin, { LoginInfo } from "../hooks/useManagerLogin";
+
+import { LogoText } from "../components/Logo/Logo";
 
 import { ROUTES } from "../../shared/routes";
 
@@ -17,8 +18,8 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export function EmployeeLogin() {
-    const { loginEmployee, isLoading, loginError } = useEmployeeLogin();
+export function ManagerLogin() {
+    const { loginManager, isLoading, loginError } = useManagerLogin();
 
     const onSubmit = async (data: FormData) => {
         reset();
@@ -29,7 +30,7 @@ export function EmployeeLogin() {
             rememberMe: data.rememberMe,
         };
         try {
-            await loginEmployee(loginInfo);
+            await loginManager(loginInfo);
         } catch {
             console.log("Login failed:", loginError);
         }
@@ -47,20 +48,27 @@ export function EmployeeLogin() {
     return (
         <>
             <div className="flex min-h-full flex-1">
+                <div className="relative hidden w-0 flex-1 lg:block">
+                    <img
+                        alt=""
+                        src="../src/assets/manager_login_cover_photo.jpg"
+                        className="absolute inset-0 size-full object-cover"
+                    />
+                </div>
                 <div className="flex flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
                     <div className="mx-auto w-full max-w-sm lg:w-96">
                         <div>
                             <LogoText />
                             <h2 className="mt-8 text-2xl/9 font-bold tracking-tight text-dark">
-                                Employee Sign In
+                                Manager Sign In
                             </h2>
                             <p className="mt-2 text-sm/6 text-light">
-                                Not an employee?{" "}
+                                Not a manager?{" "}
                                 <a
-                                    href={ROUTES.MANAGER_LOGIN}
+                                    href={ROUTES.EMPLOYEE_LOGIN}
                                     className="font-semibold text-slate-blue hover:text-slate-blue-hover"
                                 >
-                                    Sign in as a manager
+                                    Sign in as an employee
                                 </a>
                             </p>
                         </div>
@@ -179,7 +187,7 @@ export function EmployeeLogin() {
 
                                         <div className="text-sm/6">
                                             <a
-                                                href={ROUTES.FORGOT_PASSWORD}
+                                                href="#"
                                                 className="font-semibold text-slate-blue hover:text-slate-blue-hover"
                                             >
                                                 Forgot password?
@@ -199,13 +207,6 @@ export function EmployeeLogin() {
                             </div>
                         </div>
                     </div>
-                </div>
-                <div className="relative hidden w-0 flex-1 lg:block">
-                    <img
-                        alt=""
-                        src="../src/assets/employee_login_cover_photo.jpg"
-                        className="absolute inset-0 size-full object-cover"
-                    />
                 </div>
             </div>
         </>

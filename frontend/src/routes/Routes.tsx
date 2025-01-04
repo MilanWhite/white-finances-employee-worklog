@@ -20,6 +20,20 @@ export const ProtectedRoute = ({ children }: Props) => {
     return <>{children}</>;
 };
 
+export const ManagerRoute = ({ children }: Props) => {
+    const { isManager, isAuthInitializing } = useAuth();
+
+    if (isAuthInitializing) {
+        return;
+    }
+
+    if (!isManager) {
+        return <Navigate to="/" replace />;
+    }
+
+    return <>{children}</>;
+};
+
 export const PublicRoute = ({ children }: Props) => {
     const { isLoggedIn } = useAuth();
 

@@ -3,8 +3,10 @@ import apiClient from "../services/api-client";
 
 interface AuthContextType {
     isLoggedIn: boolean;
+    isManager: boolean;
     isAuthInitializing: boolean;
     setIsLoggedIn: (loggedIn: boolean) => void;
+    setIsManager: (manager: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -15,6 +17,7 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+    const [isManager, setIsManager] = useState<boolean>(false);
     const [isAuthInitializing, setIsAuthInitializing] = useState<boolean>(true);
 
     useEffect(() => {
@@ -23,11 +26,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 const response = await apiClient.post("/auth/validate");
                 if (response.data.isValid) {
                     setIsLoggedIn(true);
+                    if (response.data.isManager) {
+                        setIsManager(true)
+                    }
                 } else {
                     setIsLoggedIn(false);
                 }
             } catch (error) {
-                console.error("Error during auth initialization:", error);
+                console.log("Error during auth initialization:", error);
                 setIsLoggedIn(false);
             } finally {
                 setIsAuthInitializing(false); // Initialization complete
@@ -38,7 +44,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ isLoggedIn, isAuthInitializing, setIsLoggedIn }}>
+        <AuthContext.Provider value={{ isLoggedIn, isManager, isAuthInitializing, setIsLoggedIn, setIsManager}}>
             {children}
         </AuthContext.Provider>
     );
