@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 from flask import Flask, jsonify, make_response, request
 from flask_cors import CORS
 import jwt
-
+from flask_talisman import Talisman
 import os
 
 app = Flask(__name__)
@@ -12,6 +12,17 @@ app.secret_key = os.getenv("SECRET_KEY")
 
 ACCESS_TOKEN_EXPIRES_MINUTES = 15
 REFRESH_TOKEN_EXPIRES_DAYS = 7
+
+#CSP POLICY
+csp = {
+    'default-src': ["'self'"],
+    'script-src': ["'self'", "https://apis.example.com"],
+    'object-src': ["'none'"],
+    'style-src': ["'self'", "'unsafe-inline'"],
+    'img-src': ["'self'", "data:"],
+    'connect-src': ["'self'", "https://apis.example.com"],
+}
+Talisman(app, content_security_policy=csp)
 
 def create_access_token(user_id, is_manager, remember_me):
     return jwt.encode(
