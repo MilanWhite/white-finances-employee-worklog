@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import React, {
+    createContext,
+    useContext,
+    useState,
+    useEffect,
+    ReactNode,
+} from "react";
 import apiClient from "../services/api-client";
 
 interface AuthContextType {
@@ -23,28 +29,54 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     useEffect(() => {
         const initializeAuth = async () => {
             try {
+                // Attempt initial validation
                 const response = await apiClient.post("/auth/validate");
                 if (response.data.isValid) {
                     setIsLoggedIn(true);
-                    if (response.data.isManager) {
-                        setIsManager(true)
-                    }
-                } else {
-                    setIsLoggedIn(false);
+                    setIsManager(response.data.isManager);
+                    return;
                 }
             } catch (error) {
-                console.log("Error during auth initialization:", error);
-                setIsLoggedIn(false);
-            } finally {
-                setIsAuthInitializing(false); // Initialization complete
+                console.log("Initial validation failed, attempting refresh...");
             }
+
+            try {
+                const refreshResponse = await apiClient.post("/auth/refresh");
+                if (refreshResponse.status === 200) {
+                    console.log(
+                        "Token refreshed successfully. Revalidating..."
+                    );
+                    const validationResponse = await apiClient.post(
+                        "/auth/validate"
+                    );
+                    if (validationResponse.data.isValid) {
+                        setIsLoggedIn(true);
+                        setIsManager(validationResponse.data.isManager);
+                        return ;
+                    }
+                }
+            } catch (refreshError) {
+                console.log("Error during token refresh:", refreshError);
+            }
+
+            setIsLoggedIn(false);
         };
 
-        initializeAuth();
+        initializeAuth().finally(() => {
+            setIsAuthInitializing(false);
+        });
     }, []);
 
     return (
-        <AuthContext.Provider value={{ isLoggedIn, isManager, isAuthInitializing, setIsLoggedIn, setIsManager}}>
+        <AuthContext.Provider
+            value={{
+                isLoggedIn,
+                isManager,
+                isAuthInitializing,
+                setIsLoggedIn,
+                setIsManager,
+            }}
+        >
             {children}
         </AuthContext.Provider>
     );

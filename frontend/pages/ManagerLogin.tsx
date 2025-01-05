@@ -31,6 +31,7 @@ export function ManagerLogin() {
         };
         try {
             await loginManager(loginInfo);
+            window.location.reload();
         } catch {
             console.log("Login failed:", loginError);
         }
