@@ -5,10 +5,12 @@ import jwt
 from flask_talisman import Talisman
 import os
 from flask_wtf.csrf import CSRFProtect
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True, resources={r"/*": {"origins": "http://localhost:5173"}})
 
+load_dotenv()
 app.secret_key = os.getenv("SECRET_KEY")
 
 ACCESS_TOKEN_EXPIRES_MINUTES = 15
