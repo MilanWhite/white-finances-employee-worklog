@@ -16,20 +16,6 @@ app.secret_key = os.getenv("SECRET_KEY")
 ACCESS_TOKEN_EXPIRES_MINUTES = 15
 REFRESH_TOKEN_EXPIRES_DAYS = 7
 
-#CSP POLICY
-csp = {
-    'default-src': ["'self'"],
-    'script-src': ["'self'", "https://apis.example.com"],
-    'object-src': ["'none'"],
-    'style-src': ["'self'", "'unsafe-inline'"],
-    'img-src': ["'self'", "data:"],
-    'connect-src': ["'self'", "https://apis.example.com"],
-}
-Talisman(app, content_security_policy=csp)
-
-#CSRF protection
-csrf = CSRFProtect(app)
-
 def create_access_token(user_id, is_manager, remember_me):
     return jwt.encode(
         {
@@ -99,6 +85,28 @@ def validate_token():
     except ValueError as e:
         return jsonify({"isValid": False, "message": str(e)}), 401
 
+@app.route('/auth/refresh', methods=['POST'])
+def refresh_token():
+
+    refresh_token = request.cookies.get("refresh_token")
+
+    try:
+        decoded = decode_token(refresh_token)
+
+        user_id = decoded["id"]
+        is_manager = decoded["isManager"]
+        remember_me = decoded["rememberMe"]
+
+        new_access_token = create_access_token(user_id, is_manager, remember_me)
+
+        response = make_response(jsonify({"message": "Access token refreshed successfully"}))
+        response.set_cookie('access_token', new_access_token, httponly=True, secure=False, samesite='Strict', path='/')
+
+        return response
+
+    except ValueError as e:
+        return jsonify({"message": str(e)}), 401
+
 @app.route('/manager/dashboard', methods=['GET'])
 @requires_manager_role
 def manager_dashboard():
@@ -147,6 +155,10 @@ def manager_login():
         email = request.form.get("email")
         password = request.form.get("password")
         remember_me = request.form.get("rememberMe") == "true"
+
+        print(email)
+        print(password)
+        print(remember_me)
 
         if not email or not password:
             return jsonify({"message": "Missing required fields"}), 400
