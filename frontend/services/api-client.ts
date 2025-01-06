@@ -7,9 +7,8 @@ const apiClient = axios.create({
     withCredentials: true,
 });
 
-// Add a request interceptor to include CSRF token
 apiClient.interceptors.request.use(async (config) => {
-    const csrfToken = await getCsrfToken(); // Ensure token is fetched
+    const csrfToken = await getCsrfToken(); 
     if (csrfToken) {
         config.headers["X-CSRFToken"] = csrfToken;
     }

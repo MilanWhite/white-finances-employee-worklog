@@ -9,6 +9,7 @@ import { ManagerLogin } from "../pages/ManagerLogin";
 import { ManagerDashboard } from "../pages/ManagerDashboard";
 import { EmployeeDashboard } from "../pages/EmployeeDashboard";
 
+import CenteredSpinner from "../components/CenteredSpinner/CenteredSpinner"
 
 interface Props {
     isLoggedIn: boolean;
@@ -19,7 +20,7 @@ const DefaultRoute = ({ isLoggedIn, isManager }: Props) => {
     const { isAuthInitializing } = useAuth();
 
     if (isAuthInitializing) {
-        return ;
+        return <CenteredSpinner/>;
     }
 
     if (isLoggedIn) {

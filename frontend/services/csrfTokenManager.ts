@@ -5,7 +5,7 @@ const fetchCsrfToken = async (): Promise<string | null> => {
     if (csrfToken) {
         return csrfToken;
     }
-
+    
     const response = await fetch("http://localhost:5000/api/csrf-token", {
         credentials: "include",
     });
