@@ -4,7 +4,7 @@ from flask_cors import CORS
 import jwt
 from flask_talisman import Talisman
 import os
-from flask_wtf.csrf import CSRFProtect
+from flask_wtf.csrf import CSRFProtect, generate_csrf, CSRFError
 from dotenv import load_dotenv
 
 app = Flask(__name__)
@@ -12,6 +12,17 @@ CORS(app, supports_credentials=True, resources={r"/*": {"origins": "http://local
 
 load_dotenv()
 app.secret_key = os.getenv("SECRET_KEY")
+
+#CSRF Protection
+csrf = CSRFProtect(app)
+@app.route("/api/csrf-token")
+def csrf_token():
+    return jsonify({"csrf_token": generate_csrf()})
+
+@app.errorhandler(CSRFError)
+def handle_csrf_error(e):
+    return jsonify({"error": "CSRF token missing or incorrect."}), 400
+
 
 ACCESS_TOKEN_EXPIRES_MINUTES = 15
 REFRESH_TOKEN_EXPIRES_DAYS = 7
@@ -151,6 +162,8 @@ def employee_login():
 
 @app.route('/manager/login', methods=['POST'])
 def manager_login():
+
+    print("HIIII")
     try:
         email = request.form.get("email")
         password = request.form.get("password")

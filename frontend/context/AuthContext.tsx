@@ -6,6 +6,7 @@ import React, {
     ReactNode,
 } from "react";
 import apiClient from "../services/api-client";
+import { getCsrfToken } from "../services/csrfTokenManager";
 
 interface AuthContextType {
     isLoggedIn: boolean;
@@ -29,7 +30,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     useEffect(() => {
         const initializeAuth = async () => {
             try {
-                // Attempt initial validation
+
+                await getCsrfToken();
+
                 const response = await apiClient.post("/auth/validate");
                 if (response.data.isValid) {
                     setIsLoggedIn(true);
