@@ -7,13 +7,13 @@ interface Props {
 }
 
 export const ProtectedRoute = ({ children }: Props) => {
-    const { isLoggedIn, isAuthInitializing } = useAuth();
+    const { isLoggedIn, isManager, isAuthInitializing } = useAuth();
 
     if (isAuthInitializing) {
         return;
     }
 
-    if (!isLoggedIn) {
+    if (!isLoggedIn || isManager) {
         return <Navigate to="/" replace />;
     }
 
