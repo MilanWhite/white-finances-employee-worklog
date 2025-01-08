@@ -7,6 +7,8 @@ import os
 from flask_wtf.csrf import CSRFProtect, generate_csrf, CSRFError
 from dotenv import load_dotenv
 
+from models import db
+
 app = Flask(__name__)
 CORS(app, supports_credentials=True, resources={r"/*": {"origins": "http://localhost:5173"}})
 
@@ -22,6 +24,21 @@ def csrf_token():
 @app.errorhandler(CSRFError)
 def handle_csrf_error(e):
     return jsonify({"error": "CSRF token missing or incorrect."}), 400
+
+
+#DATABASE
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False # imrove performance
+
+db.init_app(app)
+
+# to remove once we hit production (remember to switch to migrate)
+with app.app_context():
+    try:
+        db.create_all()
+        print("Database tables created successfully.")
+    except Exception as e:
+        print(f"Error creating database tables: {e}")
 
 
 ACCESS_TOKEN_EXPIRES_MINUTES = 15
