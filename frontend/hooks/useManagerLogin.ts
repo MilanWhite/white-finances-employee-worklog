@@ -30,7 +30,7 @@ const useManagerLogin = () => {
             }
 
             setLoading(true)
-            const response = await apiClient.post("/manager/login", formData, {});
+            const response = await apiClient.post("/auth/manager/login", formData, {});
 
             if (response.data.isManager) {
                 setIsLoggedIn(true)

@@ -30,7 +30,7 @@ const useEmployeeLogin = () => {
             }
 
             setLoading(true)
-            await apiClient.post("/employee/login", formData, {});
+            await apiClient.post("/auth/employee/login", formData, {});
 
             setIsLoggedIn(true)
 

@@ -1,210 +1,38 @@
-from datetime import datetime, timedelta, timezone
-from flask import Flask, jsonify, make_response, request
+from flask import Flask
 from flask_cors import CORS
-import jwt
-from flask_talisman import Talisman
-import os
-from flask_wtf.csrf import CSRFProtect, generate_csrf, CSRFError
-from dotenv import load_dotenv
-
 from models import db
+from config import Config
+from csrf import register_csrf_routes
+from auth import auth_bp
+from employee import employee_bp
+from manager import manager_bp
 
-app = Flask(__name__)
-CORS(app, supports_credentials=True, resources={r"/*": {"origins": "http://localhost:5173"}})
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object(Config)
 
-load_dotenv()
-app.secret_key = os.getenv("SECRET_KEY")
-
-#CSRF Protection
-csrf = CSRFProtect(app)
-@app.route("/api/csrf-token")
-def csrf_token():
-    return jsonify({"csrf_token": generate_csrf()})
-
-@app.errorhandler(CSRFError)
-def handle_csrf_error(e):
-    return jsonify({"error": "CSRF token missing or incorrect."}), 400
-
-
-#DATABASE
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False # imrove performance
-
-db.init_app(app)
-
-# to remove once we hit production (remember to switch to migrate)
-with app.app_context():
-    try:
-        db.create_all()
-        print("Database tables created successfully.")
-    except Exception as e:
-        print(f"Error creating database tables: {e}")
-
-
-ACCESS_TOKEN_EXPIRES_MINUTES = 15
-REFRESH_TOKEN_EXPIRES_DAYS = 7
-
-def create_access_token(user_id, is_manager, remember_me):
-    return jwt.encode(
-        {
-            "id": user_id,
-            "isManager": is_manager,
-            "rememberMe": remember_me,
-            "exp": datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRES_MINUTES),
-        },
-        app.secret_key,
-        algorithm="HS256"
+    db.init_app(app)
+    CORS(
+        app,
+        supports_credentials=True,
+        resources={r"/*": {"origins": "http://localhost:5173"}},
     )
+    register_csrf_routes(app)
 
-def create_refresh_token(user_id, is_manager, remember_me):
-    return jwt.encode(
-        {
-            "id": user_id,
-            "isManager": is_manager,
-            "rememberMe": remember_me,
-            "exp": datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRES_DAYS),
-        },
-        app.secret_key,
-        algorithm="HS256"
-    )
+    app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(employee_bp, url_prefix='/employee')
+    app.register_blueprint(manager_bp, url_prefix='/manager')
 
-def generate_access_and_refresh_response(user_id, is_manager, remember_me):
-    access_token = create_access_token(user_id, is_manager, remember_me)
-    refresh_token = create_refresh_token(user_id, is_manager, remember_me)
-
-    response = make_response(jsonify({"message": "Logged in successfully"}))
-    response.set_cookie('access_token', access_token, httponly=True, secure=False, samesite='Strict', path='/')  # secure=True in production
-    response.set_cookie('refresh_token', refresh_token, httponly=True, secure=False, samesite='Strict', path='/')  # secure=True in production
-
-    return response
-
-def decode_token(token):
-    try:
-        return jwt.decode(token, app.secret_key, algorithms=["HS256"])
-    except jwt.ExpiredSignatureError:
-        raise ValueError("Token expired")
-    except jwt.InvalidTokenError:
-        raise ValueError("Invalid token")
-
-def requires_manager_role(func):
-    def decorated_function(*args, **kwargs):
-        access_token = request.cookies.get("access_token")
-        if not access_token:
-            return jsonify({"message": "Missing access token"}), 401
-
+    with app.app_context(): # remember to switch this
         try:
-            decoded = decode_token(access_token)
-            if not decoded.get("isManager"):
-                return jsonify({"message": "Access denied: Not a manager"}), 403
-            return func(*args, **kwargs)
-        except ValueError as e:
-            return jsonify({"message": str(e)}), 401
-    return decorated_function
+            db.create_all()
+            print("Database tables created successfully.")
+        except Exception as e:
+            print(f"Error creating database tables: {e}")
 
-@app.route('/auth/validate', methods=['POST'])
-def validate_token():
-    access_token = request.cookies.get("access_token")
-
-    if not access_token:
-        return jsonify({"isValid": False}), 401
-    try:
-        decoded = decode_token(access_token)
-        return jsonify({"isValid": True, "user_id": decoded["id"], "isManager": decoded["isManager"]}), 200
-    except ValueError as e:
-        return jsonify({"isValid": False, "message": str(e)}), 401
-
-@app.route('/auth/refresh', methods=['POST'])
-def refresh_token():
-
-    refresh_token = request.cookies.get("refresh_token")
-
-    try:
-        decoded = decode_token(refresh_token)
-
-        user_id = decoded["id"]
-        is_manager = decoded["isManager"]
-        remember_me = decoded["rememberMe"]
-
-        new_access_token = create_access_token(user_id, is_manager, remember_me)
-
-        response = make_response(jsonify({"message": "Access token refreshed successfully"}))
-        response.set_cookie('access_token', new_access_token, httponly=True, secure=False, samesite='Strict', path='/')
-
-        return response
-
-    except ValueError as e:
-        return jsonify({"message": str(e)}), 401
-
-@app.route('/manager/dashboard', methods=['GET'])
-@requires_manager_role
-def manager_dashboard():
-    return jsonify({"message": "Welcome to the manager dashboard!"}), 200
-
-@app.route('/employee/dashboard', methods=['GET'])
-def employee_dashboard():
-    access_token = request.cookies.get("access_token")
-    if not access_token:
-        return jsonify({"message": "Access token missing"}), 401
-
-    try:
-        decoded = decode_token(access_token)
-        return jsonify({
-            "message": "Welcome to the employee dashboard!",
-            "user_id": decoded["id"],
-            "isManager": decoded["isManager"]
-        }), 200
-    except ValueError as e:
-        return jsonify({"message": str(e)}), 401
-
-@app.route('/employee/login', methods=['POST'])
-def employee_login():
-    try:
-        email = request.form.get("email")
-        password = request.form.get("password")
-        remember_me = request.form.get("rememberMe") == "true"
-
-        if not email or not password:
-            return jsonify({"message": "Missing required fields"}), 400
-
-        print(email)
-        print(password)
-        print(remember_me)
-
-        # SUCCESSFUL EMPLOYEE LOGIN
-
-        return generate_access_and_refresh_response(1, False, remember_me)
-
-    except Exception as e:
-        return jsonify({"message": "A server error occured"}), 500
-
-@app.route('/manager/login', methods=['POST'])
-def manager_login():
-
-    print("HIIII")
-    try:
-        email = request.form.get("email")
-        password = request.form.get("password")
-        remember_me = request.form.get("rememberMe") == "true"
-
-        print(email)
-        print(password)
-        print(remember_me)
-
-        if not email or not password:
-            return jsonify({"message": "Missing required fields"}), 400
-
-        print(email)
-        print(password)
-        print(remember_me)
-
-        # SUCCESSFUL MANAGER LOGIN
-
-        return generate_access_and_refresh_response(1, True, remember_me)
-
-    except Exception as e:
-        return jsonify({"message": "A server error occured"}), 500
-
-
+    return app
 
 if __name__ == "__main__":
+    app = create_app()
+
     app.run(debug=True)
