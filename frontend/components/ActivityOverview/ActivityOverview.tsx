@@ -1,7 +1,7 @@
 import React from "react";
 
 import { BanknotesIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
-import { Activity } from "../../pages/EmployeeDashboard";
+import { Activity } from "../../pages/employee/EmployeeDashboard";
 
 interface ActivityOverviewProps {
     activities: Activity[];
@@ -86,13 +86,13 @@ const ActivityOverview = ({ activities }: ActivityOverviewProps) => {
                                             scope="col"
                                             className="bg-gray-50 px-6 py-3 text-left text-sm font-semibold text-gray-900"
                                         >
-                                            Transaction
+                                            Action
                                         </th>
                                         <th
                                             scope="col"
-                                            className="bg-gray-50 px-6 py-3 text-right text-sm font-semibold text-gray-900"
+                                            className="bg-gray-50 px-6 py-3 text-center text-sm font-semibold text-gray-900 whitespace-nowrap"
                                         >
-                                            Amount
+                                            Hours Worked
                                         </th>
                                         <th
                                             scope="col"

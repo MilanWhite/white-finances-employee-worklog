@@ -1,13 +1,13 @@
 import React from "react";
-import { LogoText } from "../components/Logo/Logo";
+import { LogoText } from "../../components/Logo/Logo";
 
-import useEmployeeLogin, { LoginInfo } from "../hooks/useEmployeeLogin";
+import useEmployeeLogin, { LoginInfo } from "../../hooks/useEmployeeLogin";
 
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { ROUTES } from "../../shared/routes";
+import { ROUTES } from "../../../shared/routes";
 
 const schema = z.object({
     email: z.string().email({ message: "Please enter a valid email address" }),

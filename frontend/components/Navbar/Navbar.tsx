@@ -31,10 +31,10 @@ const Navbar = ({ setSidebarOpen }: NavbarProps) => {
                         method="GET"
                         className="grid flex-1 grid-cols-1"
                     >
-                        <input
+                        <input // when a user searches something it takes them to the activity page
                             name="search"
                             type="search"
-                            placeholder="Search transactions"
+                            placeholder="Search activity"
                             aria-label="Search"
                             className="col-start-1 row-start-1 block size-full bg-white pl-8 text-base text-dark outline-hidden placeholder:text-light1 sm:text-sm/6"
                         />

@@ -4,11 +4,11 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import useManagerLogin, { LoginInfo } from "../hooks/useManagerLogin";
+import useManagerLogin, { LoginInfo } from "../../hooks/useManagerLogin";
 
-import { LogoText } from "../components/Logo/Logo";
+import { LogoText } from "../../components/Logo/Logo";
 
-import { ROUTES } from "../../shared/routes";
+import { ROUTES } from "../../../shared/routes";
 
 const schema = z.object({
     email: z.string().email({ message: "Please enter a valid email address" }),

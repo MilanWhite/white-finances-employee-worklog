@@ -5,5 +5,11 @@ export const ROUTES = {
     FORGOT_PASSWORD: "/",
 
     EMPLOYEE_DASHBOARD: "/#/employee/dashboard",
+    EMPLOYEE_SCHEDULE: "/#/employee/schedule",
+    EMPLOYEE_PROFILE: "/#/employee/profile",
+    EMPLOYEE_ACTIVITY: "/#/employee/activity",
+
+
+
     MANAGER_DASHBOARD: "/#/manager/dashboard",
 }

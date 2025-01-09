@@ -8,7 +8,7 @@ import {
 } from "@headlessui/react";
 
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { SidebarNavigationType } from "../../pages/EmployeeDashboard";
+import { SidebarNavigationType } from "../../pages/employee/EmployeeDashboard";
 
 import { Logo } from "../Logo/Logo";
 import SidebarItem from "./SidebarItem";
@@ -70,13 +70,13 @@ const Sidebar = ({
                         >
                             <div className="space-y-1 px-2">
                                 {navigation.map((item) => (
-                                    <SidebarItem item={item} />
+                                    <SidebarItem key={item.name} item={item} />
                                 ))}
                             </div>
                             <div className="mt-6 pt-6">
                                 <div className="space-y-1 px-2">
                                     {secondaryNavigation.map((item) => (
-                                        <SidebarItem item={item} />
+                                        <SidebarItem key={item.name} item={item} />
                                     ))}
                                 </div>
                             </div>
@@ -97,13 +97,13 @@ const Sidebar = ({
                     >
                         <div className="space-y-1 px-2">
                             {navigation.map((item) => (
-                                <SidebarItem item={item} />
+                                <SidebarItem key={item.name} item={item} />
                             ))}
                         </div>
                         <div className="mt-6 pt-6">
                             <div className="space-y-1 px-2">
                                 {secondaryNavigation.map((item) => (
-                                    <SidebarItem item={item} />
+                                    <SidebarItem key={item.name} item={item} />
                                 ))}
                             </div>
                         </div>

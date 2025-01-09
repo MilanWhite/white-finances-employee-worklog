@@ -10,8 +10,22 @@ import {
 import {
     ChevronDownIcon,
 } from "@heroicons/react/20/solid";
+import { ROUTES } from "../../../../shared/routes";
+import apiClient from "../../../services/api-client";
 
 const ProfileDropdown = () => {
+
+    const logOut = async () => {
+        try {
+            await apiClient.post("/auth/logout")
+
+            window.location.href = "/"
+        } catch (error) {
+            console.error('Error during sign out:', error);
+        }
+    }
+
+
     return (
         <Menu as="div" className="relative ml-3">
             <div>
@@ -38,7 +52,7 @@ const ProfileDropdown = () => {
             >
                 <MenuItem>
                     <a
-                        href="#"
+                        href={ROUTES.EMPLOYEE_PROFILE}
                         className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"
                     >
                         Your Profile
@@ -54,8 +68,8 @@ const ProfileDropdown = () => {
                 </MenuItem>
                 <MenuItem>
                     <a
-                        href="#"
-                        className="block px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"
+                        onClick={logOut}
+                        className="block px-4 py-2 cursor-pointer text-sm text-gray-700 data-focus:bg-gray-100 data-focus:outline-hidden"
                     >
                         Logout
                     </a>

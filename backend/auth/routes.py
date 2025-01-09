@@ -61,6 +61,14 @@ def employee_login():
     except Exception as e:
         return jsonify({"message": "A server error occured"}), 500
 
+@auth_bp.route('/logout', methods=['POST'])
+def employee_logout():
+
+    response = make_response({"message": "User successfully logged out"})
+    response.delete_cookie('access_token')
+    response.delete_cookie('refresh_token')
+    return response
+
 @auth_bp.route('/manager/login', methods=['POST'])
 def manager_login():
     try:

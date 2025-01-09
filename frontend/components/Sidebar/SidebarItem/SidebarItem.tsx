@@ -1,6 +1,6 @@
 import React from "react";
 
-import { SidebarNavigationType } from "../../../pages/EmployeeDashboard";
+import { SidebarNavigationType } from "../../../pages/employee/EmployeeDashboard";
 
 interface SidebarItemProps {
     item: SidebarNavigationType;

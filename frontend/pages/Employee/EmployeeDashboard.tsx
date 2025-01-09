@@ -1,24 +1,22 @@
 import React, { ComponentType, SVGProps, useState } from "react";
 
-import Sidebar from "../components/Sidebar";
+import Sidebar from "../../components/Sidebar";
 
 import {
     ClockIcon,
     CogIcon,
-    CreditCardIcon,
-    DocumentChartBarIcon,
     HomeIcon,
     QuestionMarkCircleIcon,
-    ScaleIcon,
     ShieldCheckIcon,
     UserGroupIcon,
     CalendarDaysIcon
 } from "@heroicons/react/24/outline";
 
-import Navbar from "../components/Navbar";
-import PersonalHeader from "../components/PersonalHeader";
-import OverviewCards from "../components/OverviewCards";
-import ActivityOverview from "../components/ActivityOverview";
+import Navbar from "../../components/Navbar";
+import PersonalHeader from "../../components/PersonalHeader";
+import OverviewCards from "../../components/OverviewCards";
+import ActivityOverview from "../../components/ActivityOverview";
+import { ROUTES } from "../../../shared/routes";
 
 export interface SidebarNavigationType {
     name: string;
@@ -27,15 +25,12 @@ export interface SidebarNavigationType {
     current?: boolean;
 }
 
-const navigation: SidebarNavigationType[] = [
-    { name: "Home", href: "#", icon: HomeIcon, current: true },
-    { name: "History", href: "#", icon: ClockIcon, current: false },
-    { name: "Balances", href: "#", icon: ScaleIcon, current: false },
-    { name: "Cards", href: "#", icon: CreditCardIcon, current: false },
-    { name: "Recipients", href: "#", icon: UserGroupIcon, current: false },
-    { name: "Reports", href: "#", icon: DocumentChartBarIcon, current: false },
+export const navigation: SidebarNavigationType[] = [
+    { name: "Dashboard", href: `${ROUTES.EMPLOYEE_DASHBOARD}`, icon: HomeIcon, current: true },
+    { name: "Schedule", href: `${ROUTES.EMPLOYEE_SCHEDULE}`, icon: CalendarDaysIcon, current: false },
+    { name: "Activity", href: `${ROUTES.EMPLOYEE_ACTIVITY}`, icon: UserGroupIcon, current: false },
 ];
-const secondaryNavigation: SidebarNavigationType[] = [
+export const secondaryNavigation: SidebarNavigationType[] = [
     { name: "Settings", href: "#", icon: CogIcon },
     { name: "Help", href: "#", icon: QuestionMarkCircleIcon },
     { name: "Privacy", href: "#", icon: ShieldCheckIcon },
@@ -115,9 +110,6 @@ const activities: Activity[] = [
         datetime: "2025-01-07T10:00:00",
     },
 ];
-function classNames(...classes: string[]) {
-    return classes.filter(Boolean).join(" ");
-}
 
 export function EmployeeDashboard() {
     const [sidebarOpen, setSidebarOpen] = useState(false);

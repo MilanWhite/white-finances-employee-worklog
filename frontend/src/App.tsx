@@ -3,11 +3,14 @@ import { HashRouter, Routes, Route } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { ManagerRoute, ProtectedRoute, PublicRoute } from "./routes/Routes";
 
-import { EmployeeLogin } from "../pages/EmployeeLogin";
-import { ManagerLogin } from "../pages/ManagerLogin";
+import { EmployeeLogin } from "../pages/employee/EmployeeLogin";
+import { EmployeeDashboard } from "../pages/employee/EmployeeDashboard";
+import { EmployeeActivity } from "../pages/employee/EmployeeActivity";
+import { EmployeeProfile } from "../pages/employee/EmployeeProfile";
+import { EmployeeSchedule } from "../pages/employee/EmployeeSchedule";
 
-import { ManagerDashboard } from "../pages/ManagerDashboard";
-import { EmployeeDashboard } from "../pages/EmployeeDashboard";
+import { ManagerLogin } from "../pages/manager/ManagerLogin";
+import { ManagerDashboard } from "../pages/manager/ManagerDashboard";
 
 import CenteredSpinner from "../components/CenteredSpinner/CenteredSpinner"
 
@@ -38,6 +41,7 @@ function App() {
         <>
             <HashRouter>
                 <Routes>
+
                     <Route
                         path="/"
                         element={
@@ -48,21 +52,52 @@ function App() {
                         }
                     />
 
-                    <Route
-                        path="/managerlogin"
-                        element={
-                            <PublicRoute>
-                                <ManagerLogin />
-                            </PublicRoute>
-                        }
-                    />
-
+                    {/* ALL EMPLOYEE */}
                     <Route
                         path="/employee/dashboard"
                         element={
                             <ProtectedRoute>
                                 <EmployeeDashboard />
                             </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/employee/activity"
+                        element={
+                            <ProtectedRoute>
+                                <EmployeeActivity />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/employee/profile"
+                        element={
+                            <ProtectedRoute>
+                                <EmployeeProfile />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    <Route
+                        path="/employee/schedule"
+                        element={
+                            <ProtectedRoute>
+                                <EmployeeSchedule />
+                            </ProtectedRoute>
+                        }
+                    />
+
+
+
+                    {/* ALL MANAGER */}
+                    <Route
+                        path="/managerlogin"
+                        element={
+                            <PublicRoute>
+                                <ManagerLogin />
+                            </PublicRoute>
                         }
                     />
 
